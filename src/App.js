@@ -1,23 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+// import logo from "./logo.svg";
+import "./App.css";
+import UI from "./Components/UI"
+import logo from "./cooper_logo.svg"
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {/* <div className="header">Cooper Union Energy Simulator</div> */}
+      <div className="header">
+        <div className="header-left">
+          <img src={logo} alt="Cooper Logo" />
+        </div>
+        <div className="header-middle">
+          <div className="title-text">Cooper Union Carbon Emissions Calculator</div>
+          <div className="title-after"></div>
+        </div>
+        <div className="header-right"></div>
+      </div>
+      
+      <UI />
     </div>
   );
 }
