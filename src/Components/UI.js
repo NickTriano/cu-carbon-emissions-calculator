@@ -14,7 +14,7 @@ const KBTU_THERM = 100.067;
 const THERM_CCF = 1.037;
 const COLORS = [ // colors correspond to a maximum of 10 ECMs
   'rgb(54, 162, 235)', // blue
-  'rgb(255, 99, 132)', // red //rgb(255,207,6)
+  'rgb(237,28,36)', //'rgb(255, 99, 132)', // red //rgb(255,207,6)
   '#ff7f0e',  // safety orange
   '#2ca02c',  // cooked asparagus green
   '#9467bd',  // muted purple
@@ -23,18 +23,6 @@ const COLORS = [ // colors correspond to a maximum of 10 ECMs
   '#7f7f7f',  // middle gray
   '#bcbd22',  // curry yellow-green
   '#17becf'   // blue-teal
-  
-  
-  // 'rgb(54, 162, 235)', // blue
-  // 'rgb(255, 99, 132)', // red //rgb(255,207,6)
-  // '#2ca02c',  // cooked asparagus green
-  // '#d62728',  // brick red
-  // '#9467bd',  // muted purple
-  // '#8c564b',  // chestnut brown
-  // '#e377c2',  // raspberry yogurt pink
-  // '#7f7f7f',  // middle gray
-  // '#bcbd22',  // curry yellow-green
-  // '#17becf'   // blue-teal
 ]
 
 class UI extends Component {
@@ -73,6 +61,8 @@ class UI extends Component {
         }],
 
         totalFlag: true,
+        btnTotal: 'btn-clicked',
+        btnNet: 'btn-unclicked'
     };
 
     // Binding this keyword
@@ -119,10 +109,14 @@ class UI extends Component {
 
   setTotal() {
     this.setState({ totalFlag: true });
+    this.setState({ btnTotal: 'btn-clicked' });
+    this.setState({ btnNet: 'btn-unclicked' });
   }
   
   setNet() {
     this.setState({ totalFlag: false });
+    this.setState({ btnTotal: 'btn-unclicked' });
+    this.setState({ btnNet: 'btn-clicked' });
   }
 
   render() {
@@ -177,7 +171,7 @@ class UI extends Component {
         data: this.state.totalFlag ? [e_kbtu, gas_kbtu] : [net_e_kbtu, net_gas_kbtu],
         backgroundColor: [
           'rgb(54, 162, 235)',
-          'rgb(255, 99, 132)', //rgb(255,207,6)
+          'rgb(237,28,36)', //rgb(255,207,6)
         ],
         hoverOffset: 4
       }]
@@ -199,7 +193,7 @@ class UI extends Component {
         data: this.state.totalFlag ? [electriity_co2, gas_co2] : [net_electricity_co2, net_gas_co2],
         backgroundColor: [
           'rgb(54, 162, 235)',
-          'rgb(255, 99, 132)',
+          'rgb(237,28,36)',
         ],
         hoverOffset: 4
       }]
@@ -221,7 +215,7 @@ class UI extends Component {
         data: this.state.totalFlag ? [electricity_cost, gas_cost]: [net_electricity_cost, net_gas_cost],
         backgroundColor: [
           'rgb(54, 162, 235)',
-          'rgb(255, 99, 132)',
+          'rgb(237,28,36)',
         ],
         hoverOffset: 4
       }]
@@ -276,7 +270,7 @@ class UI extends Component {
           label: 'LL97 Penalty',
           data: [penalty24, penalty30, penalty35],
           backgroundColor: [
-            'rgb(255, 99, 132)',
+            'rgb(237,28,36)',
           ],   
         }
       ]
@@ -287,17 +281,25 @@ class UI extends Component {
       plugins: {
         title: {
             display: true,
-            text: 'Energy and LL97 Costs ($)',
+            text: 'Energy and LL97 Costs',
             padding: {bottom: 0}
         }
       },
       scales: {
         xAxes: [{
           stacked: true,
+          // gridLines: {display: false}
+          // gridThickness: 0,
+
         }],
         yAxes: [{
-          stacked: true
-        }]
+          stacked: true,
+          // gridLines: {display: false}
+          // gridThickness: 0,
+        }],
+        // x: {grid: {display: false}},
+        // x: {gridThickness: 0},
+          // y: {grid: {display: false}},
       },
       maintainAspectRatio: false
     }
@@ -333,7 +335,7 @@ class UI extends Component {
     if (target > 0){
       annotations.push({
         label: {
-          backgroundColor: ((target <= total_co2) ? 'rgb(255, 99, 132)' : 'rgba(255, 99, 132, 0.5)'),
+          backgroundColor: ((target <= total_co2) ? 'rgb(237,28,36)' : 'rgba(255, 99, 132, 0.5)'),
           content: [years[i] + ' Target', target.toFixed(0) + ' tCO2e/yr'],
           enabled: true,
           yAdjust: -60,
@@ -341,17 +343,19 @@ class UI extends Component {
         type: 'line',
         xMin: target,
         xMax: target,
-        borderColor:  ((target <= total_co2) ? 'rgb(255, 99, 132)' : 'rgba(255, 99, 132, 0.5)'),
+        borderColor:  ((target <= total_co2) ? 'rgb(237,28,36)' : 'rgba(255, 99, 132, 0.5)'),
         borderWidth: 2,
       })
     }
   });
+
   var options_thresholds = {
     indexAxis: 'y',
     plugins: {
       title: {
           display: true,
-          text: 'LL97 Thresholds',
+          // text: 'LL97 Thresholds',
+          text: 'LL97 CO2 Emissions Targets (tCO2e)',
           padding: { bottom: 50},
       },
       legend: {
@@ -360,6 +364,20 @@ class UI extends Component {
       annotation: {
         annotations: annotations,
       }
+    },
+    scales: {
+      x: {
+         grid: {
+            // display: false, 
+            drawBorder: false,
+           },
+          },
+      y: {
+         grid: {
+            display: false, 
+            drawBorder: false,
+           },
+        },
     },
     maintainAspectRatio: false
   }
@@ -395,8 +413,8 @@ class UI extends Component {
           <div className="content-layout">
             <div className="top-row">
             <div className="btn-group">
-              <button onClick={this.setTotal}>Total (without ECMs)</button>
-              <button onClick={this.setNet}>Net (with ECMs)</button>
+              <button className = {this.state.btnTotal} onClick={this.setTotal}>Total (without ECMs)</button>
+              <button className = {this.state.btnNet} onClick={this.setNet}>Net (with ECMs)</button>
             </div>
               {/* pie total energy use */}
               <div className="chart-container">
@@ -425,9 +443,11 @@ class UI extends Component {
               {/* LL97 costs */}
               <div className="chart-container bar">
                 <Bar id="ll97-cost" data={data_ll97} options={options_ll97} ref={(reference) => this.bar_ll97 = reference}  />
+                <div className='axis-label'> Total Cost ($) </div>
               </div>
               <div className="chart-container bar-thresholds">
                 <Bar id="thresholds" data={data_thresholds} options={options_thresholds} ref={(reference) => this.bar_thresholds = reference} />
+                {/* <div className='axis-label'> CO2 Emissions (tons CO2e) </div> */}
               </div>
             </div>
             

@@ -73,9 +73,12 @@ class ECMField extends Component {
                     <div className="input-border"></div>
                     </div>
                 ))}
-            <button onClick={this.addECM}>{" "}Add ECM{" "}</button>
+            {/* <div className="ecm-btn-group"> */}
+            <button className="btn-1" onClick={this.addECM}>{" "}Add ECM{" "}</button>
             <button onClick={this.setDefaultECMs}>{" "}Set Default ECMs{" "}</button>
             <button onClick={this.clearECMs}>{" "}Clear ECMs{" "}</button>
+            {/* </div> */}
+            
 
 
             {/* npx browserslist@latest --update-db */}

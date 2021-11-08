@@ -102,6 +102,7 @@ img {
 
 .sidebar {
   border-right: 4px solid rgba(0, 0, 0, 0.25);
+  /* border-right: 4px solid black; */
   text-align: left;
   /* height: calc(100% - 190px); */
   height: calc(100% - 120px);
@@ -219,6 +220,12 @@ img {
   white-space: nowrap;
 }
 
+.ecm-btn-group {
+  /* display: flex; */
+  /* justify-content: center; */
+  /* text-align: center; */
+}
+
 .bottom-row, .top-row {
   display: block;
   box-sizing: border-box;
@@ -260,9 +267,9 @@ img {
 } */
 
 /* Add a background color on hover */
-.btn-group button:hover {
+/* .btn-group button:hover {
   background-color: gray;
-}
+} */
 
 .bottom-row {
   width: calc(100% - 30px);
@@ -278,6 +285,12 @@ img {
   /* width: 20vw; */
   width: 20%;
   display: inline-block;
+}
+
+.axis-label {
+  font-family: "Helvetica";
+  font-size: 12px;
+  color: rgb(128, 128, 128);
 }
 
 .ecm {
@@ -329,4 +342,12 @@ img {
 @font-face {
   font-family: 'Trade-Gothic-LT'; /*a name to be used later*/
   src: url('Trade-Gothic-LT-Bold-2.ttf'); /*URL to font*/
+}
+
+.btn-clicked {
+  background-color: gray;
+}
+
+.btn-unclicked {
+  background-color: -internal-light-dark(rgb(239, 239, 239), rgb(59, 59, 59));
 }
