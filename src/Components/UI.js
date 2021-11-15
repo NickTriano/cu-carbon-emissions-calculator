@@ -6,6 +6,7 @@ import LimitsField from "./limits";
 import { Pie, Bar } from 'react-chartjs-2';
 import { Chart } from 'chart.js';
 import annotationPlugin from 'chartjs-plugin-annotation';
+import {defaults_2019} from '../defaults'
 
 Chart.register(annotationPlugin);
 
@@ -69,6 +70,7 @@ class UI extends Component {
       this.onChange = this.onChange.bind(this);
       this.onTextChange = this.onTextChange.bind(this);
       this.onECMChange = this.onECMChange.bind(this);
+      this.setDefaults = this.setDefaults.bind(this);
       this.onSubmit = this.onSubmit.bind(this);
       this.setTotal = this.setTotal.bind(this);
       this.setNet = this.setNet.bind(this);
@@ -97,9 +99,13 @@ class UI extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
+  setDefaults() {
+    this.setState(defaults_2019);
+  }
+
   onSubmit(e) {
     e.preventDefault();
-    console.log(this.state);
+    // console.log(this.state);
 
     var e_kbtu = this.state.electricityUse*KBTU_KWH;
     var gas_kbtu = this.state.gasUse*KBTU_THERM;
@@ -150,11 +156,14 @@ class UI extends Component {
     var net_gas_kbtu = gas_kbtu - ecm_gas_kbtu;
     var net_electricity_co2 = electriity_co2 - ecm_electricity_co2;
     var net_gas_co2 = gas_co2 - ecm_gas_co2;
-    var net_electricity_cost = electricity_cost - ecm_electricity_savings;
-    var net_gas_cost = gas_cost - ecm_gas_savings;
+    // use maximum to prevent negative $ costs
+    var net_electricity_cost = Math.max(electricity_cost - ecm_electricity_savings, 0);
+    var net_gas_cost = Math.max(gas_cost - ecm_gas_savings, 0);
     var net_co2 = total_co2 - ecm_co2;
+    var net_cost = net_gas_cost+net_electricity_cost;
+    var ecm_savings =  total_cost - net_cost;
 
-    // LL97 NEED TO INCLUDE ECMS??
+    // LL97 targets
     var target24 = this.state.area*this.state.limit24/1000;
     var target30 = this.state.area*this.state.limit30/1000;
     var target35 = this.state.area*this.state.limit35/1000;
@@ -260,7 +269,8 @@ class UI extends Component {
         {
           stack: "stack1",
           label: 'Energy Cost',
-          data: [total_cost, total_cost, total_cost],
+          // data: [total_cost, total_cost, total_cost],
+          data: [net_cost, net_cost, net_cost],
           backgroundColor: [
             'rgb(54, 162, 235)',
           ],
@@ -271,6 +281,14 @@ class UI extends Component {
           data: [penalty24, penalty30, penalty35],
           backgroundColor: [
             'rgb(237,28,36)',
+          ],   
+        },
+        {
+          stack: "stack1",
+          label: 'ECM Savings',
+          data: [ecm_savings, ecm_savings, ecm_savings],
+          backgroundColor: [
+            'rgba(0, 145, 77, 0.4)',
           ],   
         }
       ]
@@ -288,18 +306,10 @@ class UI extends Component {
       scales: {
         xAxes: [{
           stacked: true,
-          // gridLines: {display: false}
-          // gridThickness: 0,
-
         }],
         yAxes: [{
           stacked: true,
-          // gridLines: {display: false}
-          // gridThickness: 0,
         }],
-        // x: {grid: {display: false}},
-        // x: {gridThickness: 0},
-          // y: {grid: {display: false}},
       },
       maintainAspectRatio: false
     }
@@ -320,7 +330,7 @@ class UI extends Component {
         label: 'ECM Savings',
         data: [ecm_co2],
         backgroundColor: [
-          'rgb(0, 145, 77)',
+          'rgba(0, 145, 77, 0.4)',
         ],   
       }
     ]
@@ -403,7 +413,8 @@ class UI extends Component {
               <div className="head-text-2">ECM Savings</div>
               {/* <ECMField name={this.state.ecms.name} electricity={this.state.ecms.electricity} gas={this.state.ecms.gas} onChange={this.onChange} onTextChange={this.onTextChange}/> */}
               <ECMField ecms={this.state.ecms} addECM={this.addECM} onChange={this.onECMChange}/>
-              <input type="submit" value="Submit" />
+              {/* <input type="submit" value="Submit" /> */}
+              <button onClick={this.setDefaults}>Restore 2019 41CS Defaults</button>
             </form>
           </div>
         </div>
