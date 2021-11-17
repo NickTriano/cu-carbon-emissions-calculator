@@ -301,7 +301,22 @@ class UI extends Component {
             display: true,
             text: 'Energy and LL97 Costs',
             padding: {bottom: 0}
-        }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              var label = context.dataset.label || '';
+  
+              if (label) {
+                  label += ': ';
+              }
+              if (context.parsed.y !== null) {
+                  label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(context.parsed.x);
+              }
+              return label;
+            }
+          }
+      },
       },
       scales: {
         xAxes: [{
