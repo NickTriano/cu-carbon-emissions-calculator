@@ -105,7 +105,6 @@ class UI extends Component {
 
   onSubmit(e) {
     e.preventDefault();
-    // console.log(this.state);
 
     var e_kbtu = this.state.electricityUse*KBTU_KWH;
     var gas_kbtu = this.state.gasUse*KBTU_THERM;
@@ -127,12 +126,12 @@ class UI extends Component {
 
   render() {
     // total energy use
-    var e_kbtu = this.state.electricityUse*KBTU_KWH;
-    var gas_kbtu = this.state.gasUse*KBTU_THERM;
+    var e_kbtu = this.state.electricityUse*KBTU_KWH; // convert kWh to kBtu
+    var gas_kbtu = this.state.gasUse*KBTU_THERM; // convert therms to kBtu
     
     // total CO2
-    var electriity_co2 = this.state.electricityUse * this.state.electricityCoeff;
-    var gas_co2 = gas_kbtu * this.state.gasCoeff;
+    var electriity_co2 = this.state.electricityUse * this.state.electricityCoeff; // coeff is tCO2e/kWh
+    var gas_co2 = gas_kbtu * this.state.gasCoeff; // coeff is tCO2e/kBtu
     var total_co2 = electriity_co2 + gas_co2;
 
     // total costs
@@ -143,15 +142,16 @@ class UI extends Component {
     // ECM energy, CO2, and cost savings
     var ecm_e_kbtu = this.state.ecms.reduce( (x, ecm) => x + ecm.electricity, 0);
     var ecm_gas_kbtu = this.state.ecms.reduce( (x, ecm) => x + ecm.gas, 0);
-    var ecm_electricity_co2 = ecm_e_kbtu*this.state.electricityCoeff;
-    var ecm_gas_co2 = ecm_gas_kbtu*this.state.gasCoeff;
-    var ecm_electricity_savings = ecm_e_kbtu*this.state.electricityRate;
-    var ecm_gas_savings = ecm_e_kbtu*this.state.gasRate;
+    var ecm_electricity_co2 = ecm_e_kbtu/KBTU_KWH*this.state.electricityCoeff; // coeff is tCO2e/kWh
+    var ecm_gas_co2 = ecm_gas_kbtu*this.state.gasCoeff; // coeff is tCO2e/kBtu
+    var ecm_electricity_savings = ecm_e_kbtu/KBTU_KWH*this.state.electricityRate; // rate is $/kWh
+    var ecm_gas_savings = ecm_gas_kbtu/KBTU_THERM*this.state.gasRate; // must covert to therms since rate is $/therm, not $/kBtu
     var ecm_co2 = ecm_electricity_co2 + ecm_gas_co2;
-    // ECM CO2 data for pie chart
+    // ECM CO2 data for pie chart                 kBtu   *   kWh/kBtu  *  tCO2e/kWh                    kBtu * tCO2e/kBtu
     var ecms_co2 = this.state.ecms.map(ecm => ecm.electricity/KBTU_KWH*this.state.electricityCoeff + ecm.gas*this.state.gasCoeff);
 
     // net energy, CO2, and costs
+    // add maximum for energy & co2 values too?
     var net_e_kbtu = e_kbtu - ecm_e_kbtu;
     var net_gas_kbtu = gas_kbtu - ecm_gas_kbtu;
     var net_electricity_co2 = electriity_co2 - ecm_electricity_co2;
@@ -351,7 +351,6 @@ class UI extends Component {
     ]
   };
 
-
   // NEED TO DECFREASE BAR WIDTH (HEIGHT OF CHART) WHILE KEEPING GRAPH CENTERED
   var targets = [target24, target30, target35];
   var years = ['2024', '2030', '2035+'];
@@ -426,16 +425,13 @@ class UI extends Component {
               <LimitsField limit24={this.state.limit24} limit30={this.state.limit30} limit35={this.state.limit35} />
               
               <div className="head-text-2">ECM Savings</div>
-              {/* <ECMField name={this.state.ecms.name} electricity={this.state.ecms.electricity} gas={this.state.ecms.gas} onChange={this.onChange} onTextChange={this.onTextChange}/> */}
               <ECMField ecms={this.state.ecms} addECM={this.addECM} onChange={this.onECMChange}/>
-              {/* <input type="submit" value="Submit" /> */}
               <button onClick={this.setDefaults}>Restore 2019 41CS Defaults</button>
             </form>
           </div>
         </div>
         
         <div>
-          {/* <canvas id="myChart"></canvas> */}
           <div className="content-layout">
             <div className="top-row">
             <div className="btn-group">
@@ -485,11 +481,3 @@ class UI extends Component {
 }
 
 export default UI;
-
-// react chart js 2
-// https://betterprogramming.pub/4-ways-of-adding-external-js-files-in-reactjs-823f85de3668
-// https://codepen.io/jamiecalder/pen/NrROeB
-// https://www.geeksforgeeks.org/how-to-create-horizontal-bar-chart-using-react-bootstrap/
-// https://github.com/chartjs/chartjs-plugin-annotation
-// https://www.chartjs.org/chartjs-plugin-annotation/samples/intro.html
-// https://www.codegrepper.com/code-examples/javascript/dynamic+input+fields+in+react+js
