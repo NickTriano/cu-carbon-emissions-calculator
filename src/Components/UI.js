@@ -36,12 +36,12 @@ class UI extends Component {
         area: 175000, // square feet
 
         // utility inputs
-        electricityUse: 3357600, // kWh
-        electricityDemand: 770, // kW
+        electricityUse: 3357600, // kWh (blended rate accounts for both energy and demand)
+        // electricityDemand: 770, // kW
         gasUse: 224449, // therms
         // electricityRate: 0.03, // $/kWh
         electricityRate: 0.19, // $/kWh
-        electricityDemandRate: 25, // $/kW
+        // electricityDemandRate: 25, // $/kW
         gasRate: 0.36, // $/therm
 
         // LL97 inputs
@@ -135,7 +135,8 @@ class UI extends Component {
     var total_co2 = electriity_co2 + gas_co2;
 
     // total costs
-    var electricity_cost = this.state.electricityUse*this.state.electricityRate + this.state.electricityDemand*this.state.electricityDemandRate;
+    // var electricity_cost = this.state.electricityUse*this.state.electricityRate + this.state.electricityDemand*this.state.electricityDemandRate;
+    var electricity_cost = this.state.electricityUse*this.state.electricityRate;
     var gas_cost = this.state.gasUse*this.state.gasRate;
     var total_cost = electricity_cost + gas_cost;
 
@@ -415,8 +416,8 @@ class UI extends Component {
               <BuildingInputField name="area" value={this.state.area} onChange={this.onChange} />
               
               <div className="head-text-2">Utility Inputs</div>
-              <InputField leftText="Electricity (kWh)" leftVar="electricityUse" leftValue={this.state.electricityUse} rightText="$/kWh" rightVar="electricityRate" rightValue={this.state.electricityRate} onChange={this.onChange}/>
-              <InputField leftText="Max Demand (kW)" leftVar="electricityDemand" leftValue={this.state.electricityDemand} rightText="$/kW" rightVar="electricityDemandRate" rightValue={this.state.electricityDemandRate} onChange={this.onChange}/>
+              <InputField leftText="Electricity (kWh)" leftVar="electricityUse" leftValue={this.state.electricityUse} rightText="$/kWh (Blended)" rightVar="electricityRate" rightValue={this.state.electricityRate} onChange={this.onChange}/>
+              {/* <InputField leftText="Max Demand (kW)" leftVar="electricityDemand" leftValue={this.state.electricityDemand} rightText="$/kW" rightVar="electricityDemandRate" rightValue={this.state.electricityDemandRate} onChange={this.onChange}/> */}
               <InputField leftText="Natural Gas (therms)" leftVar="gasUse" leftValue={this.state.gasUse} rightText="$/therm" rightVar="gasRate" rightValue={this.state.gasRate} onChange={this.onChange}/>
               
               <div className="head-text-2">Carbon Coefficients</div>
