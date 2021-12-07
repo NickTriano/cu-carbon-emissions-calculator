@@ -33,7 +33,7 @@ class UI extends Component {
     // Set initial state
     this.state = {
         // building inputs
-        area: 175000, // square feet
+        area: 180000, // square feet
 
         // utility inputs
         electricityUse: 3357600, // kWh (blended rate accounts for both energy and demand)
