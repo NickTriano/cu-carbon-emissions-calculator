@@ -53,7 +53,7 @@ class UI extends Component {
         limit24: 8.46,
         limit30: 4.53,
         limit35: 1.4,
-        penalty: 268,
+        penalty: 268, // $/tCO2e
 
         ecms: [{
           name: '',
@@ -360,7 +360,7 @@ class UI extends Component {
     if (target > 0){
       annotations.push({
         label: {
-          backgroundColor: ((target <= total_co2) ? 'rgb(237,28,36)' : 'rgba(255, 99, 132, 0.5)'),
+          backgroundColor: ((target <= net_co2) ? 'rgb(237,28,36)' : 'rgba(255, 99, 132, 0.5)'),
           content: [years[i] + ' Target', target.toFixed(0) + ' tCO2e/yr'],
           enabled: true,
           yAdjust: -60,
@@ -368,7 +368,7 @@ class UI extends Component {
         type: 'line',
         xMin: target,
         xMax: target,
-        borderColor:  ((target <= total_co2) ? 'rgb(237,28,36)' : 'rgba(255, 99, 132, 0.5)'),
+        borderColor:  ((target <= net_co2) ? 'rgb(237,28,36)' : 'rgba(255, 99, 132, 0.5)'),
         borderWidth: 2,
       })
     }
