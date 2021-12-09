@@ -1,7 +1,7 @@
 // default utility data from 41CS in 2019
 const defaults_2019 = {
   // building inputs
-  area: 175000, // square feet
+  area: 180000, // square feet
 
   // utility inputs
   electricityUse: 3357600, // kWh
