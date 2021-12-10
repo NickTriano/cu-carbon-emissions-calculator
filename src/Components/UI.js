@@ -79,9 +79,6 @@ class UI extends Component {
   pie_energy_use = {};
   pie_co2 = {};
   pie_cost = {};
-  pie_net_energy_use = {};
-  pie_net_co2 = {};
-  pie_net_cost = {};
   pie_ecm = {};
   bar_ll97 = {};
   bar_co2 = {};
@@ -108,8 +105,6 @@ class UI extends Component {
 
     var e_kbtu = this.state.electricityUse*KBTU_KWH;
     var gas_kbtu = this.state.gasUse*KBTU_THERM;
-    this.pie_energy_use.data.datasets[0].data = [e_kbtu, gas_kbtu];
-    this.pie_energy_use.update()
   }
 
   setTotal() {
