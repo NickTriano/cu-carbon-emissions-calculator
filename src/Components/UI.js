@@ -102,9 +102,6 @@ class UI extends Component {
 
   onSubmit(e) {
     e.preventDefault();
-
-    var e_kbtu = this.state.electricityUse*KBTU_KWH;
-    var gas_kbtu = this.state.gasUse*KBTU_THERM;
   }
 
   setTotal() {
