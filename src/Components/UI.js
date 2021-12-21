@@ -74,6 +74,8 @@ class UI extends Component {
       this.onSubmit = this.onSubmit.bind(this);
       this.setTotal = this.setTotal.bind(this);
       this.setNet = this.setNet.bind(this);
+      this.valueLabelFunction = this.valueLabelFunction.bind(this);
+      this.costLabelFunction = this.costLabelFunction.bind(this);
   }
 
   pie_energy_use = {};
@@ -116,15 +118,44 @@ class UI extends Component {
     this.setState({ btnNet: 'btn-clicked' });
   }
 
+
+  valueLabelFunction(context) {
+    var label = context.label || '';
+    if (label) {
+      label += ': ';
+    }
+    if (context.parsed !== null) {
+      label += new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(context.parsed);
+    }
+    return label;
+  }
+
+  costLabelFunction(context) {
+    if (context.parsed.x == undefined) {
+      var label = context.label || '';
+      if (label) {
+        label += ': ';
+      }
+      label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(context.parsed);
+    } else {
+        var label = context.dataset.label || '';
+        if (label) {
+          label += ': ';
+        }
+        label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(context.parsed.x);
+    }
+    return label;
+  }
+
   render() {
     // total energy use
     var e_kbtu = this.state.electricityUse*KBTU_KWH; // convert kWh to kBtu
     var gas_kbtu = this.state.gasUse*KBTU_THERM; // convert therms to kBtu
     
     // total CO2
-    var electriity_co2 = this.state.electricityUse * this.state.electricityCoeff; // coeff is tCO2e/kWh
+    var electricity_co2 = this.state.electricityUse * this.state.electricityCoeff; // coeff is tCO2e/kWh
     var gas_co2 = gas_kbtu * this.state.gasCoeff; // coeff is tCO2e/kBtu
-    var total_co2 = electriity_co2 + gas_co2;
+    var total_co2 = electricity_co2 + gas_co2;
 
     // total costs
     // var electricity_cost = this.state.electricityUse*this.state.electricityRate + this.state.electricityDemand*this.state.electricityDemandRate;
@@ -147,7 +178,7 @@ class UI extends Component {
     // add maximum for energy & co2 values too?
     var net_e_kbtu = e_kbtu - ecm_e_kbtu;
     var net_gas_kbtu = gas_kbtu - ecm_gas_kbtu;
-    var net_electricity_co2 = electriity_co2 - ecm_electricity_co2;
+    var net_electricity_co2 = electricity_co2 - ecm_electricity_co2;
     var net_gas_co2 = gas_co2 - ecm_gas_co2;
     // use maximum to prevent negative $ costs
     var net_electricity_cost = Math.max(electricity_cost - ecm_electricity_savings, 0);
@@ -184,15 +215,28 @@ class UI extends Component {
           title: {
               display: true,
               text: this.state.totalFlag ? 'Total Energy Use (kBtu)' : 'Net Energy Use (kBtu)' 
-          }
+          },
+          tooltip: {
+            callbacks: {
+              label: this.valueLabelFunction
+            }
+        }
       },
       maintainAspectRatio: false
     };
 
+    var e_co2, g_co2;
+    if (this.state.totalFlag){
+      e_co2 = Math.max(electricity_co2, 0);
+      g_co2 = Math.max(gas_co2, 0);
+    } else {
+      e_co2 = Math.max(net_electricity_co2, 0);
+      g_co2 = Math.max(net_gas_co2, 0);
+    }
     var data_co2 = {
       labels: ['Electricity','Natural Gas',],
       datasets: [{
-        data: this.state.totalFlag ? [electriity_co2, gas_co2] : [net_electricity_co2, net_gas_co2],
+        data: [e_co2, g_co2],
         backgroundColor: [
           'rgb(54, 162, 235)',
           'rgb(237,28,36)',
@@ -206,7 +250,12 @@ class UI extends Component {
           title: {
               display: true,
               text: this.state.totalFlag ? 'Total CO2 Emissions (tCO2)' : 'Net CO2 Emissions (tCO2)'
-          }
+          },
+          tooltip: {
+            callbacks: {
+              label: this.valueLabelFunction
+            }
+        }
       },
       maintainAspectRatio: false
     };
@@ -228,7 +277,12 @@ class UI extends Component {
           title: {
               display: true,
               text: this.state.totalFlag ? 'Total Energy Costs ($)' : 'Net Energy Costs ($)'
-          }
+          },
+          tooltip: {
+            callbacks: {
+              label: this.costLabelFunction
+            }
+        }
       },
       maintainAspectRatio: false
     };
@@ -297,17 +351,7 @@ class UI extends Component {
         },
         tooltip: {
           callbacks: {
-            label: function(context) {
-              var label = context.dataset.label || '';
-  
-              if (label) {
-                  label += ': ';
-              }
-              if (context.parsed.y !== null) {
-                  label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(context.parsed.x);
-              }
-              return label;
-            }
+            label: this.costLabelFunction
           }
       },
       },
@@ -328,7 +372,7 @@ class UI extends Component {
       {
         stack: "stack1",
         label: 'Net CO2 Emissions',
-        data: [net_co2],
+        data: [net_co2 >= 0 ? net_co2 : 0],
         backgroundColor: [
           'rgb(54, 162, 235)',
         ],
@@ -336,7 +380,7 @@ class UI extends Component {
       {
         stack: "stack1",
         label: 'ECM Savings',
-        data: [ecm_co2],
+        data: [net_co2 >= 0 ? ecm_co2 : -ecm_co2],
         backgroundColor: [
           'rgba(0, 145, 77, 0.4)',
         ],   
