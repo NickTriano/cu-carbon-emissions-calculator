@@ -1,6 +1,7 @@
 // default utility data from 41CS in 2019
 const defaults_2019 = {
   // building inputs
+  building: 'B_norm',
   area: 180000, // square feet
 
   // utility inputs
@@ -16,10 +17,17 @@ const defaults_2019 = {
   // carbon coefficients
   electricityCoeff: 0.000288962, // tons CO2e/kWh
   gasCoeff: 0.00005311, // tons CO2e/kBtu}
+  
+  // carbon limits (kg CO2e/sf/year)
+  limits: {
+    limit24: 8.46,
+    limit30: 4.53,
+    limit35: 1.4,
+  }
 }
 
 // default ECMS from CU-EnergyMasterPlanPresentationCalculations-20210601.xlsx in Facilities Repository, as of 10/30/21
-// and from Oliver Zhang's thesis ()
+// and from Oliver Zhang's thesis
 // based on assumptions of savings allocated to electricity or natural gas
 const default_ecms = [{
     name: 'Lab Heat Recovery',
@@ -47,4 +55,21 @@ const default_ecms = [{
     gas: 0
   }];
 
-export {defaults_2019, default_ecms};
+const carbon_limits = {
+  A: {limit24: 10.74, limit30: 4.2, limit35: 1.4},
+  B_norm: {limit24: 8.46, limit30: 4.53, limit35: 1.4},
+  B_health: {limit24: 23.81, limit30: 11.93, limit35: 1.4},
+  E: {limit24: 7.58, limit30: 3.44, limit35: 1.4},
+  F: {limit24: 5.74, limit30: 1.67, limit35: 1.4},
+  H: {limit24: 23.81, limit30: 11.93, limit35: 1.4},
+  I1: {limit24: 11.38, limit30: 5.98, limit35: 1.4},
+  I2: {limit24: 23.81, limit30: 11.93, limit35: 1.4},
+  I3: {limit24: 23.81, limit30: 11.93, limit35: 1.4},
+  I4: {limit24: 7.58, limit30: 3.44, limit35: 1.4},
+  M: {limit24: 11.81, limit30: 4.03, limit35: 1.4},
+  R1: {limit24: 9.87, limit30: 5.26, limit35: 1.4},
+  R2: {limit24: 6.75, limit30: 4.07, limit35: 1.4},
+  U: {limit24: 4.26, limit30: 1.1, limit35: 1.4},
+}
+
+export {defaults_2019, default_ecms, carbon_limits};

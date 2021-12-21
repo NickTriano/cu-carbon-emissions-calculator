@@ -6,7 +6,7 @@ import LimitsField from "./limits";
 import { Pie, Bar } from 'react-chartjs-2';
 import { Chart } from 'chart.js';
 import annotationPlugin from 'chartjs-plugin-annotation';
-import {defaults_2019} from '../defaults'
+import {defaults_2019, carbon_limits} from '../defaults'
 
 Chart.register(annotationPlugin);
 
@@ -33,6 +33,7 @@ class UI extends Component {
     // Set initial state
     this.state = {
         // building inputs
+        building: 'B_norm',
         area: 180000, // square feet
 
         // utility inputs
@@ -50,9 +51,11 @@ class UI extends Component {
         gasCoeff: 0.00005311, // tons CO2e/kBtu
         
         // carbon limits (kg CO2e/sf/year)
-        limit24: 8.46,
-        limit30: 4.53,
-        limit35: 1.4,
+        limits: {
+          limit24: 8.46,
+          limit30: 4.53,
+          limit35: 1.4,
+        },
         penalty: 268, // $/tCO2e
 
         ecms: [{
@@ -69,6 +72,7 @@ class UI extends Component {
     // Binding this keyword
       this.onChange = this.onChange.bind(this);
       this.onTextChange = this.onTextChange.bind(this);
+      this.onLimitsChange = this.onLimitsChange.bind(this);
       this.onECMChange = this.onECMChange.bind(this);
       this.setDefaults = this.setDefaults.bind(this);
       this.onSubmit = this.onSubmit.bind(this);
@@ -90,6 +94,10 @@ class UI extends Component {
     this.setState({ [e.target.name]: Number(e.target.value) });
   }
 
+  onLimitsChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
+    this.setState({ limits: carbon_limits[e.target.value] });
+  }
   onECMChange(ecms) {
     this.setState({ ecms: ecms });
   }
@@ -192,9 +200,9 @@ class UI extends Component {
     var ecm_savings =  ecm_electricity_savings + ecm_gas_savings;
 
     // LL97 targets
-    var target24 = this.state.area*this.state.limit24/1000;
-    var target30 = this.state.area*this.state.limit30/1000;
-    var target35 = this.state.area*this.state.limit35/1000;
+    var target24 = this.state.area*this.state.limits.limit24/1000;
+    var target30 = this.state.area*this.state.limits.limit30/1000;
+    var target35 = this.state.area*this.state.limits.limit35/1000;
 
     var penalty24 = Math.max((net_co2 - target24)*this.state.penalty, 0);
     var penalty30 = Math.max((net_co2 - target30)*this.state.penalty, 0);
@@ -450,7 +458,7 @@ class UI extends Component {
           <div className="sidebar-main-container">
             <form onSubmit={this.onSubmit}>
               <div className="head-text-2">Building Inputs</div>
-              <BuildingInputField name="area" value={this.state.area} onChange={this.onChange} />
+              <BuildingInputField building={this.state.building} name="area" value={this.state.area} onTextChange={this.onLimitsChange} onChange={this.onChange} />
               
               <div className="head-text-2">Utility Inputs</div>
               <InputField leftText="Electricity (kWh)" leftVar="electricityUse" leftValue={this.state.electricityUse} rightText="$/kWh (Blended)" rightVar="electricityRate" rightValue={this.state.electricityRate} onChange={this.onChange}/>
@@ -460,7 +468,7 @@ class UI extends Component {
               <div className="head-text-2">Carbon Coefficients</div>
               <InputField leftText="Electricity (tCO2e/kWh)" leftVar="electricityCoeff" leftValue={this.state.electricityCoeff} rightText="Gas (tCO2e/kBtu)" rightVar="gasCoeff" rightValue={this.state.gasCoeff} onChange={this.onChange}/>
               <div className="head-text-2">LL97 Carbon Limits</div>
-              <LimitsField limit24={this.state.limit24} limit30={this.state.limit30} limit35={this.state.limit35} />
+              <LimitsField limit24={this.state.limits.limit24} limit30={this.state.limits.limit30} limit35={this.state.limits.limit35} />
               
               <div className="head-text-2">ECM Savings</div>
               <ECMField ecms={this.state.ecms} addECM={this.addECM} onChange={this.onECMChange}/>
