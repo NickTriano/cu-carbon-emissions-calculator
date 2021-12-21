@@ -149,8 +149,9 @@ class UI extends Component {
 
   render() {
     // total energy use
-    var e_kbtu = this.state.electricityUse*KBTU_KWH; // convert kWh to kBtu
+    var electricity_kbtu = this.state.electricityUse*KBTU_KWH; // convert kWh to kBtu
     var gas_kbtu = this.state.gasUse*KBTU_THERM; // convert therms to kBtu
+    var total_kbtu = electricity_kbtu + gas_kbtu;
     
     // total CO2
     var electricity_co2 = this.state.electricityUse * this.state.electricityCoeff; // coeff is tCO2e/kWh
@@ -164,28 +165,31 @@ class UI extends Component {
     var total_cost = electricity_cost + gas_cost;
 
     // ECM energy, CO2, and cost savings
-    var ecm_e_kbtu = this.state.ecms.reduce( (x, ecm) => x + ecm.electricity, 0);
+    var ecm_electricity_kbtu = this.state.ecms.reduce( (x, ecm) => x + ecm.electricity, 0);
     var ecm_gas_kbtu = this.state.ecms.reduce( (x, ecm) => x + ecm.gas, 0);
-    var ecm_electricity_co2 = ecm_e_kbtu/KBTU_KWH*this.state.electricityCoeff; // coeff is tCO2e/kWh
+    var ecm_electricity_co2 = ecm_electricity_kbtu/KBTU_KWH*this.state.electricityCoeff; // coeff is tCO2e/kWh
     var ecm_gas_co2 = ecm_gas_kbtu*this.state.gasCoeff; // coeff is tCO2e/kBtu
-    var ecm_electricity_savings = ecm_e_kbtu/KBTU_KWH*this.state.electricityRate; // rate is $/kWh
+    var ecm_electricity_savings = ecm_electricity_kbtu/KBTU_KWH*this.state.electricityRate; // rate is $/kWh
     var ecm_gas_savings = ecm_gas_kbtu/KBTU_THERM*this.state.gasRate; // must covert to therms since rate is $/therm, not $/kBtu
+    var ecm_kbtu = ecm_electricity_kbtu + ecm_gas_kbtu;
     var ecm_co2 = ecm_electricity_co2 + ecm_gas_co2;
+    
     // ECM CO2 data for pie chart                 kBtu   *   kWh/kBtu  *  tCO2e/kWh                    kBtu * tCO2e/kBtu
     var ecms_co2 = this.state.ecms.map(ecm => ecm.electricity/KBTU_KWH*this.state.electricityCoeff + ecm.gas*this.state.gasCoeff);
 
     // net energy, CO2, and costs
-    // add maximum for energy & co2 values too?
-    var net_e_kbtu = e_kbtu - ecm_e_kbtu;
-    var net_gas_kbtu = gas_kbtu - ecm_gas_kbtu;
-    var net_electricity_co2 = electricity_co2 - ecm_electricity_co2;
-    var net_gas_co2 = gas_co2 - ecm_gas_co2;
     // use maximum to prevent negative $ costs
+    var net_electricity_kbtu = Math.max(electricity_kbtu - ecm_electricity_kbtu, 0);
+    var net_gas_kbtu = Math.max(gas_kbtu - ecm_gas_kbtu, 0);
+    var net_electricity_co2 = Math.max(electricity_co2 - ecm_electricity_co2, 0);
+    var net_gas_co2 = Math.max(gas_co2 - ecm_gas_co2, 0);
     var net_electricity_cost = Math.max(electricity_cost - ecm_electricity_savings, 0);
     var net_gas_cost = Math.max(gas_cost - ecm_gas_savings, 0);
-    var net_co2 = total_co2 - ecm_co2;
-    var net_cost = net_gas_cost+net_electricity_cost;
-    var ecm_savings =  total_cost - net_cost;
+    
+    var net_kbtu = Math.max(total_kbtu - ecm_kbtu, 0);
+    var net_co2 = Math.max(total_co2 - ecm_co2, 0);
+    var net_cost = net_gas_cost + net_electricity_cost;
+    var ecm_savings =  ecm_electricity_savings + ecm_gas_savings;
 
     // LL97 targets
     var target24 = this.state.area*this.state.limit24/1000;
@@ -196,15 +200,15 @@ class UI extends Component {
     var penalty30 = Math.max((net_co2 - target30)*this.state.penalty, 0);
     var penalty35 = Math.max((net_co2 - target35)*this.state.penalty, 0);
     
+
     // pie charts
     var data_energy_use = {
       labels: ['Electricity','Natural Gas',],
       datasets: [{
-        // label: 'Energy Use',
-        data: this.state.totalFlag ? [e_kbtu, gas_kbtu] : [net_e_kbtu, net_gas_kbtu],
+        data: this.state.totalFlag ? [electricity_kbtu, gas_kbtu] : [net_electricity_kbtu, net_gas_kbtu],
         backgroundColor: [
           'rgb(54, 162, 235)',
-          'rgb(237,28,36)', //rgb(255,207,6)
+          'rgb(237,28,36)',
         ],
         hoverOffset: 4
       }]
@@ -214,7 +218,8 @@ class UI extends Component {
       plugins: {
           title: {
               display: true,
-              text: this.state.totalFlag ? 'Total Energy Use (kBtu)' : 'Net Energy Use (kBtu)' 
+              text: this.state.totalFlag ? 'Total Energy Use (kBtu)' : 'Net Energy Use (kBtu)',
+              font: { size: 16} 
           },
           tooltip: {
             callbacks: {
@@ -225,18 +230,11 @@ class UI extends Component {
       maintainAspectRatio: false
     };
 
-    var e_co2, g_co2;
-    if (this.state.totalFlag){
-      e_co2 = Math.max(electricity_co2, 0);
-      g_co2 = Math.max(gas_co2, 0);
-    } else {
-      e_co2 = Math.max(net_electricity_co2, 0);
-      g_co2 = Math.max(net_gas_co2, 0);
-    }
+    
     var data_co2 = {
       labels: ['Electricity','Natural Gas',],
       datasets: [{
-        data: [e_co2, g_co2],
+        data: this.state.totalFlag ? [electricity_co2, gas_co2] : [net_electricity_co2, net_gas_co2],
         backgroundColor: [
           'rgb(54, 162, 235)',
           'rgb(237,28,36)',
@@ -249,7 +247,8 @@ class UI extends Component {
       plugins: {
           title: {
               display: true,
-              text: this.state.totalFlag ? 'Total CO2 Emissions (tCO2)' : 'Net CO2 Emissions (tCO2)'
+              text: this.state.totalFlag ? 'Total CO2 Emissions (tCO2)' : 'Net CO2 Emissions (tCO2)',
+              font: { size: 16}
           },
           tooltip: {
             callbacks: {
@@ -276,7 +275,8 @@ class UI extends Component {
       plugins: {
           title: {
               display: true,
-              text: this.state.totalFlag ? 'Total Energy Costs ($)' : 'Net Energy Costs ($)'
+              text: this.state.totalFlag ? 'Total Energy Costs ($)' : 'Net Energy Costs ($)',
+              font: { size: 16}
           },
           tooltip: {
             callbacks: {
@@ -300,7 +300,8 @@ class UI extends Component {
       plugins: {
           title: {
               display: true,
-              text: 'ECM CO2 Savings'
+              text: 'ECM CO2 Savings',
+              font: { size: 16}
           },
           legend: {
             position: 'right'
@@ -316,7 +317,6 @@ class UI extends Component {
         {
           stack: "stack1",
           label: 'Energy Cost',
-          // data: [total_cost, total_cost, total_cost],
           data: [net_cost, net_cost, net_cost],
           backgroundColor: [
             'rgb(54, 162, 235)',
@@ -347,7 +347,8 @@ class UI extends Component {
         title: {
             display: true,
             text: 'Energy and LL97 Costs',
-            padding: {bottom: 0}
+            padding: {bottom: 0},
+            font: { size: 16}
         },
         tooltip: {
           callbacks: {
@@ -366,13 +367,13 @@ class UI extends Component {
       maintainAspectRatio: false
     }
 
-   var data_thresholds ={
+    var data_thresholds ={
     labels: [''],
     datasets: [
       {
         stack: "stack1",
         label: 'Net CO2 Emissions',
-        data: [net_co2 >= 0 ? net_co2 : 0],
+        data: [net_co2],
         backgroundColor: [
           'rgb(54, 162, 235)',
         ],
@@ -380,7 +381,7 @@ class UI extends Component {
       {
         stack: "stack1",
         label: 'ECM Savings',
-        data: [net_co2 >= 0 ? ecm_co2 : -ecm_co2],
+        data: [net_co2 > 0 ? ecm_co2 : -ecm_co2],
         backgroundColor: [
           'rgba(0, 145, 77, 0.4)',
         ],   
@@ -388,7 +389,6 @@ class UI extends Component {
     ]
   };
 
-  // NEED TO DECFREASE BAR WIDTH (HEIGHT OF CHART) WHILE KEEPING GRAPH CENTERED
   var targets = [target24, target30, target35];
   var years = ['2024', '2030', '2035+'];
   var annotations = [];
@@ -418,6 +418,7 @@ class UI extends Component {
           // text: 'LL97 Thresholds',
           text: 'LL97 CO2 Emissions Targets (tCO2e)',
           padding: { bottom: 50},
+          font: { size: 16}
       },
       legend: {
         display: false
@@ -478,18 +479,19 @@ class UI extends Component {
               {/* pie total energy use */}
               <div className="chart-container">
                 <Pie id="energy-use" data={data_energy_use} options={options_energy_use} ref={(reference) => this.pie_energy_use = reference}  />
+                <div className='total-label'> {Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(this.state.totalFlag ? total_kbtu : net_kbtu)} kBtu </div>
               </div>
-
-              {/* pie net energy use? */}
 
               {/* pie total CO2 */}
               <div className="chart-container">
                 <Pie id="energy-co2" data={data_co2} options={options_co2} ref={(reference) => this.pie_co2 = reference}  />
+                <div className='total-label'> {Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(this.state.totalFlag ? total_co2 : net_co2)} tCO2e </div>
               </div>
 
               {/* pie total energy costs */}
               <div className="chart-container">
                 <Pie id="energy-cost" data={data_cost} options={options_cost} ref={(reference) => this.pie_cost = reference}  />
+                <div className='total-label'> {Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(this.state.totalFlag ? total_cost : net_cost)} </div>
               </div>
               
               {/* pie ECM CO2 breakdown */}
@@ -506,7 +508,6 @@ class UI extends Component {
               </div>
               <div className="chart-container bar-thresholds">
                 <Bar id="thresholds" data={data_thresholds} options={options_thresholds} ref={(reference) => this.bar_thresholds = reference} />
-                {/* <div className='axis-label'> CO2 Emissions (tons CO2e) </div> */}
               </div>
             </div>
             
