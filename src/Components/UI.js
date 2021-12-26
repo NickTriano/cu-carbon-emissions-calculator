@@ -12,7 +12,6 @@ Chart.register(annotationPlugin);
 
 const KBTU_KWH = 3.412;
 const KBTU_THERM = 100.067;
-const THERM_CCF = 1.037;
 const COLORS = [ // colors correspond to a maximum of 10 ECMs
   'rgb(54, 162, 235)', // blue
   'rgb(237,28,36)', //'rgb(255, 99, 132)', // red //rgb(255,207,6)
@@ -139,14 +138,15 @@ class UI extends Component {
   }
 
   costLabelFunction(context) {
-    if (context.parsed.x == undefined) {
-      var label = context.label || '';
+    var label;
+    if (context.parsed.x === undefined) {
+      label = context.label || '';
       if (label) {
         label += ': ';
       }
       label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(context.parsed);
     } else {
-        var label = context.dataset.label || '';
+        label = context.dataset.label || '';
         if (label) {
           label += ': ';
         }
@@ -167,7 +167,6 @@ class UI extends Component {
     var total_co2 = electricity_co2 + gas_co2;
 
     // total costs
-    // var electricity_cost = this.state.electricityUse*this.state.electricityRate + this.state.electricityDemand*this.state.electricityDemandRate;
     var electricity_cost = this.state.electricityUse*this.state.electricityRate;
     var gas_cost = this.state.gasUse*this.state.gasRate;
     var total_cost = electricity_cost + gas_cost;
@@ -177,27 +176,24 @@ class UI extends Component {
     var ecm_gas_kbtu = this.state.ecms.reduce( (x, ecm) => x + ecm.gas, 0);
     var ecm_electricity_co2 = ecm_electricity_kbtu/KBTU_KWH*this.state.electricityCoeff; // coeff is tCO2e/kWh
     var ecm_gas_co2 = ecm_gas_kbtu*this.state.gasCoeff; // coeff is tCO2e/kBtu
-    var ecm_electricity_savings = ecm_electricity_kbtu/KBTU_KWH*this.state.electricityRate; // rate is $/kWh
-    var ecm_gas_savings = ecm_gas_kbtu/KBTU_THERM*this.state.gasRate; // must covert to therms since rate is $/therm, not $/kBtu
-    var ecm_kbtu = ecm_electricity_kbtu + ecm_gas_kbtu;
-    var ecm_co2 = ecm_electricity_co2 + ecm_gas_co2;
     
     // ECM CO2 data for pie chart                 kBtu   *   kWh/kBtu  *  tCO2e/kWh                    kBtu * tCO2e/kBtu
     var ecms_co2 = this.state.ecms.map(ecm => ecm.electricity/KBTU_KWH*this.state.electricityCoeff + ecm.gas*this.state.gasCoeff);
 
     // net energy, CO2, and costs
-    // use maximum to prevent negative $ costs
+    // use maximum to prevent negative values
     var net_electricity_kbtu = Math.max(electricity_kbtu - ecm_electricity_kbtu, 0);
     var net_gas_kbtu = Math.max(gas_kbtu - ecm_gas_kbtu, 0);
-    var net_electricity_co2 = Math.max(electricity_co2 - ecm_electricity_co2, 0);
-    var net_gas_co2 = Math.max(gas_co2 - ecm_gas_co2, 0);
-    var net_electricity_cost = Math.max(electricity_cost - ecm_electricity_savings, 0);
-    var net_gas_cost = Math.max(gas_cost - ecm_gas_savings, 0);
+    var net_electricity_co2 = net_electricity_kbtu/KBTU_KWH*this.state.electricityCoeff; // coeff is tCO2e/kWh
+    var net_gas_co2 = net_gas_kbtu*this.state.gasCoeff; // coeff is tCO2e/kBtu
+    var net_electricity_cost = net_electricity_kbtu/KBTU_KWH*this.state.electricityRate; // rate is $/kWh
+    var net_gas_cost = net_gas_kbtu/KBTU_THERM*this.state.gasRate; // must covert to therms since rate is $/therm, not $/kBtu
     
-    var net_kbtu = Math.max(total_kbtu - ecm_kbtu, 0);
-    var net_co2 = Math.max(total_co2 - ecm_co2, 0);
-    var net_cost = net_gas_cost + net_electricity_cost;
-    var ecm_savings =  ecm_electricity_savings + ecm_gas_savings;
+    var net_kbtu = net_electricity_kbtu + net_gas_kbtu;
+    var net_co2 = net_electricity_co2 + net_gas_co2;
+    var net_cost = net_electricity_cost + net_gas_cost;
+    var ecm_co2 = total_co2 - net_co2;
+    var ecm_savings =  total_cost - net_cost;
 
     // LL97 targets
     var target24 = this.state.area*this.state.limits.limit24/1000;
@@ -389,7 +385,7 @@ class UI extends Component {
       {
         stack: "stack1",
         label: 'ECM Savings',
-        data: [net_co2 > 0 ? ecm_co2 : -ecm_co2],
+        data: [ecm_co2],
         backgroundColor: [
           'rgba(0, 145, 77, 0.4)',
         ],   
