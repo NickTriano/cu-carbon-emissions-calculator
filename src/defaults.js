@@ -11,7 +11,7 @@ const defaults_2019 = {
   // electricityRate: 0.03, // $/kWh
   electricityRate: 0.19, // $/kWh
   electricityDemandRate: 25, // $/kW
-  gasRate: 0.36, // $/therm
+  gasRate: 0.9, // $/therm
 
   // LL97 inputs
   // carbon coefficients
