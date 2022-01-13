@@ -1,5 +1,5 @@
-// default utility data from 41CS in 2019
-const defaults_2019 = {
+// default utility data from 41CS in 2020
+const defaults_2020 = {
   // building inputs
   building: 'B_norm',
   area: 180000, // square feet
@@ -34,11 +34,11 @@ const default_ecms = [{
     electricity: 0,
     gas: 3276219 // 174 tCO2e 3276219*0.00005311
   },
-  {
-    name: 'Heat Pump',
-    electricity: 0,
-    gas: 5554510 // 295 tCO2e 5554510*0.00005311
-  },
+  // {
+  //   name: 'Heat Pump',
+  //   electricity: 0,
+  //   gas: 5554510 // 295 tCO2e 5554510*0.00005311
+  // },
   // {
   //   name: 'Improved Cogen Heat Recovery',
   //   electricity: 720275, // 61 tCO2e split or just all gas? 142
@@ -72,4 +72,4 @@ const carbon_limits = {
   U: {limit24: 4.26, limit30: 1.1, limit35: 1.4},
 }
 
-export {defaults_2019, default_ecms, carbon_limits};
+export {defaults_2020, default_ecms, carbon_limits};

@@ -4,7 +4,7 @@ import InputField from './input_field';
 import ECMField from './ecm_field';
 import LimitsField from './limits';
 import ChartContent from './charts';
-import {defaults_2019, carbon_limits} from '../defaults'
+import {defaults_2020, carbon_limits} from '../defaults'
 
 class UI extends Component {
   constructor(props) {
@@ -76,7 +76,7 @@ class UI extends Component {
   }
 
   setDefaults() {
-    this.setState(defaults_2019);
+    this.setState(defaults_2020);
   }
 
   onSubmit(e) {
@@ -145,7 +145,7 @@ class UI extends Component {
               
               <div className="head-text-2">ECM Savings</div>
               <ECMField ecms={this.state.ecms} addECM={this.addECM} onChange={this.onECMChange}/>
-              <button onClick={this.setDefaults}>Restore 2019 41CS Defaults</button>
+              <button onClick={this.setDefaults}>Restore 2020 41CS Defaults</button>
             </form>
           </div>
         </div>
