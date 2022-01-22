@@ -55,8 +55,6 @@ class UI extends Component {
       this.onSubmit = this.onSubmit.bind(this);
       this.setTotal = this.setTotal.bind(this);
       this.setNet = this.setNet.bind(this);
-      this.valueLabelFunction = this.valueLabelFunction.bind(this);
-      this.costLabelFunction = this.costLabelFunction.bind(this);
   }
 
   onChange(e) {
@@ -93,36 +91,6 @@ class UI extends Component {
     this.setState({ totalFlag: false });
     this.setState({ btnTotal: 'btn-unclicked' });
     this.setState({ btnNet: 'btn-clicked' });
-  }
-
-
-  valueLabelFunction(context) {
-    var label = context.label || '';
-    if (label) {
-      label += ': ';
-    }
-    if (context.parsed !== null) {
-      label += new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(context.parsed);
-    }
-    return label;
-  }
-
-  costLabelFunction(context) {
-    var label;
-    if (context.parsed.x === undefined) {
-      label = context.label || '';
-      if (label) {
-        label += ': ';
-      }
-      label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(context.parsed);
-    } else {
-        label = context.dataset.label || '';
-        if (label) {
-          label += ': ';
-        }
-        label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(context.parsed.x);
-    }
-    return label;
   }
 
   render() {

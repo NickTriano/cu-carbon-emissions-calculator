@@ -30,6 +30,35 @@ class ChartContent extends Component {
     bar_co2 = {};
     bar_thresholds = {};
     
+    valueLabelFunction = context => {
+        var label = context.label || '';
+        if (label) {
+          label += ': ';
+        }
+        if (context.parsed !== null) {
+          label += new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(context.parsed);
+        }
+        return label;
+    }
+    
+    costLabelFunction = context => {
+    var label;
+    if (context.parsed.x === undefined) {
+        label = context.label || '';
+        if (label) {
+        label += ': ';
+        }
+        label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(context.parsed);
+    } else {
+        label = context.dataset.label || '';
+        if (label) {
+            label += ': ';
+        }
+        label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(context.parsed.x);
+    }
+    return label;
+    }
+
     getProps = () => {
         // total energy use
         var electricity_kbtu = this.props.electricityUse*KBTU_KWH; // convert kWh to kBtu
