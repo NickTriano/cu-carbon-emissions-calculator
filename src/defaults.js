@@ -1,3 +1,5 @@
+// Stores all default values for the user input based on 41CS in 2020
+
 // default utility data from 41CS in 2020
 const defaults_2020 = {
   // building inputs

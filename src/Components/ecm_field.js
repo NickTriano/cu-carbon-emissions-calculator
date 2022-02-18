@@ -1,3 +1,5 @@
+// Generates the user input fields for energy conservation measures (ECMs)
+
 import React, { Component } from "react";
 import { default_ecms } from "../defaults";
 

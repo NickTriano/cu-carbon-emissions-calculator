@@ -1,3 +1,7 @@
+// Generates all charts displayed in the web application
+// and performs all calculations associated with the charts 
+// based on the user input
+
 import React, { Component } from "react";
 import { Pie, Bar } from 'react-chartjs-2';
 import { Chart } from 'chart.js';

@@ -1,3 +1,6 @@
+// Generates the LL97 carbon emissions limits corresponding 
+// to the building type in the user input
+
 import React, { Component } from "react";
 
 class LimitsField extends Component {

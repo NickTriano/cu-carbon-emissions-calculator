@@ -1,3 +1,6 @@
+// Generates user input field templates for 
+// utility information and carbon coefficients
+
 import React, { Component } from "react";
 
 class InputField extends Component {

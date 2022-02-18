@@ -1,3 +1,5 @@
+// Generates the user input fields for the building type and floor area
+
 import React, { Component } from "react";
 
 class BuildingInputField extends Component {

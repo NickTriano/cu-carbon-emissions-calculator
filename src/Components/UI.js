@@ -1,3 +1,7 @@
+// Generates and displays the entire user interface 
+// using the React components from the other Javascript files
+// and contains the default user input values in the initial state
+
 import React, { Component } from 'react';
 import BuildingInputField from './building_field';
 import InputField from './input_field';
