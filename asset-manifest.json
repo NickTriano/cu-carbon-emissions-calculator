@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/cu-carbon-emissions-calculator/static/css/main.dbc9118f.chunk.css",
+    "main.js": "/cu-carbon-emissions-calculator/static/js/main.f9bc8cbc.chunk.js",
+    "main.js.map": "/cu-carbon-emissions-calculator/static/js/main.f9bc8cbc.chunk.js.map",
+    "runtime-main.js": "/cu-carbon-emissions-calculator/static/js/runtime-main.cc2c1d2c.js",
+    "runtime-main.js.map": "/cu-carbon-emissions-calculator/static/js/runtime-main.cc2c1d2c.js.map",
+    "static/js/2.5c7df3ae.chunk.js": "/cu-carbon-emissions-calculator/static/js/2.5c7df3ae.chunk.js",
+    "static/js/2.5c7df3ae.chunk.js.map": "/cu-carbon-emissions-calculator/static/js/2.5c7df3ae.chunk.js.map",
+    "static/js/3.410cf966.chunk.js": "/cu-carbon-emissions-calculator/static/js/3.410cf966.chunk.js",
+    "static/js/3.410cf966.chunk.js.map": "/cu-carbon-emissions-calculator/static/js/3.410cf966.chunk.js.map",
+    "index.html": "/cu-carbon-emissions-calculator/index.html",
+    "static/css/main.dbc9118f.chunk.css.map": "/cu-carbon-emissions-calculator/static/css/main.dbc9118f.chunk.css.map",
+    "static/js/2.5c7df3ae.chunk.js.LICENSE.txt": "/cu-carbon-emissions-calculator/static/js/2.5c7df3ae.chunk.js.LICENSE.txt",
+    "static/media/App.css": "/cu-carbon-emissions-calculator/static/media/Trade-Gothic-LT-Bold-2.e07f84a3.ttf",
+    "static/media/cooper_logo.bc42489a.svg": "/cu-carbon-emissions-calculator/static/media/cooper_logo.bc42489a.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.cc2c1d2c.js",
+    "static/js/2.5c7df3ae.chunk.js",
+    "static/css/main.dbc9118f.chunk.css",
+    "static/js/main.f9bc8cbc.chunk.js"
+  ]
+}
